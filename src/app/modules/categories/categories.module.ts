@@ -22,6 +22,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { CategoriesHomeComponent } from './page/categories-home/categories-home.component';
 import { CATEGORIES_ROUTES } from './categories.routing';
 import { CategoriesTableComponent } from './components/categories-table/categories-table.component';
+import { CategoryFormComponent } from './components/category-form/category-form.component';
 
 
 
@@ -30,6 +31,7 @@ import { CategoriesTableComponent } from './components/categories-table/categori
   declarations: [
     CategoriesHomeComponent,
     CategoriesTableComponent,
+    CategoryFormComponent,
   ],
   imports: [
     CommonModule,
