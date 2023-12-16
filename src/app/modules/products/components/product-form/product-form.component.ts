@@ -7,6 +7,10 @@ import { CategoriesService } from 'src/app/services/categories/categories.servic
 import { GetCategorieResponse } from 'src/app/models/interfaces/categories/responses/GetCategorieResponse';
 import { ProductsService } from 'src/app/services/products/products.service';
 import { CreateProductRequest } from 'src/app/models/interfaces/products/request/CreateProductRequest';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { GetAllProductsResponse } from 'src/app/models/interfaces/products/response/GetAllProductsResponse';
+import { EventAction } from 'src/app/models/interfaces/products/event/eventAction';
+import { ProductsDataTransferService } from 'src/app/shared/services/products/products-data-transfer.service';
 
 @Component({
   selector: 'app-product-form',
@@ -18,6 +22,12 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<void> = new Subject();
   public categoriesDatas: Array<GetCategorieResponse> = [];
   public selectedCategory: Array<{ name: string; code: string }> = [];
+  public productAction!: {
+    event: EventAction;
+    productDatas: Array<GetAllProductsResponse>;
+  };
+  public productSelectedDatas!: GetAllProductsResponse;
+  public productsDatas: Array<GetAllProductsResponse> = [];
   public addProductForm = this.formBuilder.group({
     name: ['', Validators.required],
     price: ['', Validators.required],
@@ -26,15 +36,25 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     amount: [0, Validators.required],
   });
 
+  public editProductForm = this.formBuilder.group({
+    name: ['', Validators.required],
+    price: ['', Validators.required],
+    description: ['', Validators.required],
+    amount: [0, Validators.required],
+  });
+
   constructor(
     private categoriesService: CategoriesService,
     private productsService: ProductsService,
+    private productsDtService: ProductsDataTransferService,
     private formBuilder: FormBuilder,
     private messageService: MessageService,
     private router: Router,
+    public ref: DynamicDialogConfig,
   ) {}
 
   ngOnInit(): void {
+    this.productAction = this.ref.data;
     this.getAllCategories();
   }
   getAllCategories(): void {
@@ -87,6 +107,47 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     }
 
     this.addProductForm.reset();
+  }
+
+  handleSubmitEditProduct(): void {
+    // if (this.editProductForm.value && this.editProductForm.valid) {
+    // }
+  }
+
+  getProductSelectedDatas(productId: string): void {
+    const allProducts = this.productAction?.productDatas;
+
+    if (allProducts.length > 0) {
+      const productFiltered = allProducts.filter(
+        (element) => element?.id === productId
+      );
+
+      if (productFiltered) {
+        this.productSelectedDatas = productFiltered[0];
+
+        this.editProductForm.setValue({
+          name: this.productSelectedDatas?.name,
+          price: this.productSelectedDatas?.price,
+          amount: this.productSelectedDatas?.amount,
+          description: this.productSelectedDatas?.description,
+        });
+      }
+    }
+  }
+
+  getProductDatas(): void {
+    this.productsService
+      .getAllProducts()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.length > 0) {
+            this.productsDatas = response;
+            this.productsDatas &&
+              this.productsDtService.setProductsDatas(this.productsDatas);
+          }
+        },
+      });
   }
 
 
