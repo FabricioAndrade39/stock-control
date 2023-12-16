@@ -21,6 +21,7 @@ import { ConfirmationService } from 'primeng/api';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { CategoriesHomeComponent } from './page/categories-home/categories-home.component';
 import { CATEGORIES_ROUTES } from './categories.routing';
+import { CategoriesTableComponent } from './components/categories-table/categories-table.component';
 
 
 
@@ -28,6 +29,7 @@ import { CATEGORIES_ROUTES } from './categories.routing';
 @NgModule({
   declarations: [
     CategoriesHomeComponent,
+    CategoriesTableComponent,
   ],
   imports: [
     CommonModule,
